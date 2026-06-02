@@ -1,0 +1,6 @@
+# Bỏ qua tất cả các file trong thư mục này
+*
+
+# Ngoại trừ chính file .gitkeep và .gitignore
+!.gitkeep
+!.gitignore
