@@ -1,34 +1,53 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('calen')
 export class Calen {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 255 })
-  content: string;
+  content!: string;
 
   @Column({ type: 'datetime' })
-  date: Date;
+  date!: Date;
 
   @Column({ type: 'boolean', default: true })
-  visible: boolean;
+  visible!: boolean;
 
   @Column({ type: 'int' })
-  colFrom: number;
+  colFrom!: number;
 
   @Column({ type: 'int' })
-  colTo: number;
+  colTo!: number;
 
   @Column({ type: 'int' })
-  rowFrom: number;
+  rowFrom!: number;
 
   @Column({ type: 'int' })
-  rowTo: number;
+  rowTo!: number;
+
+  @Column({ type: 'boolean', default: false })
+  isDelete!: boolean;
+
+  @Column({ type: 'uuid' })
+  createdByUserId!: string;
+
+  @ManyToOne(() => User, (user) => user.calens, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'createdByUserId' })
+  creator!: User;
 
   @CreateDateColumn({ type: 'datetime' })
-  createdAt: Date;
+  createdAt!: Date;
 
-  @UpdateDateColumn({ type: 'datetime'})
-  updatedAt: Date;
+  @UpdateDateColumn({ type: 'datetime' })
+  updatedAt!: Date;
 }
