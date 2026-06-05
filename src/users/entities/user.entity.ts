@@ -25,8 +25,8 @@ export class User {
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;
 
-  @Column({ type: 'datetime' })
-  lastLoggedIn!: Date;
+  @Column({ type: 'datetime', nullable: true, default: null })
+  lastLoggedIn!: Date | null;
 
   @Column({ type: 'boolean', default: false })
   isDelete!: boolean;

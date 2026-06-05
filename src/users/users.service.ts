@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ReadUserDto } from './dto/read-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,20 +13,28 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<ReadUserDto> {
     const user = this.userRepository.create({
       ...createUserDto,
       isActive: createUserDto.isActive ?? true,
     });
 
-    return this.userRepository.save(user);
+    const {id, email, fullName, isActive, lastLoggedIn, createdAt} = await this.userRepository.save(user);
+
+    return {
+      id, email, fullName, isActive, lastLoggedIn, createdAt
+    } as ReadUserDto;
   }
 
-  findAll(): Promise<User[]> {
-    return this.userRepository.find({
+  async findAll(): Promise<ReadUserDto[]> {
+    const userList = await this.userRepository.find({
       where: { isDelete: false },
       order: { createdAt: 'DESC' },
     });
+
+    return userList.map(({id, email, fullName, isActive, lastLoggedIn, createdAt}) => ({
+      id, email, fullName, isActive, lastLoggedIn, createdAt
+    } as ReadUserDto))
   }
 
   async findOne(id: string): Promise<User> {
@@ -40,19 +49,25 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+  async update(updateId: string, updateUserDto: UpdateUserDto): Promise<ReadUserDto> {
+    const user = await this.findOne(updateId);
 
     this.userRepository.merge(user, updateUserDto);
 
-    return this.userRepository.save(user);
+    const {id, email, fullName, isActive, lastLoggedIn, createdAt} = await this.userRepository.save(user);
+
+    return {
+      id, email, fullName, isActive, lastLoggedIn, createdAt
+    } as ReadUserDto;
   }
 
-  async remove(id: string): Promise<User> {
+  async remove(id: string): Promise<boolean> {
     const user = await this.findOne(id);
 
     user.isDelete = true;
 
-    return this.userRepository.save(user);
+    const userDeleted = await this.userRepository.save(user);
+
+    return true;
   }
 }
