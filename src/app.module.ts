@@ -3,8 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { CalenModule } from './calen/calen.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { CalenModule } from './calen/calen.module';
       autoLoadEntities: true,
       synchronize: process.env.DB_SYNC === 'true',
     }),
-    UsersModule,
+    AuthModule,
+    UserModule,
     CalenModule,
   ],
   controllers: [AppController],

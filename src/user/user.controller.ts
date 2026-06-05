@@ -7,22 +7,25 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ReadUserDto } from './dto/read-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Controller('user')
+export class UserController {
+  constructor(private readonly usersService: UserService) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto): Promise<ReadUserDto> {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(): Promise<ReadUserDto[]> {
     return this.usersService.findAll();

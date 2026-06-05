@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Calen } from './entities/calen.entity';
 import { CreateCalenDto } from './dto/create-calen.dto';
 import { UpdateCalenDto } from './dto/update-calen.dto';
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CalenService {
