@@ -1,0 +1,18 @@
+export class ReadCalenDto {
+  id!: string;
+  content!: string;
+
+  date!: Date;
+
+  visible?: boolean;
+
+  colFrom!: number;
+
+  colTo!: number;
+
+  rowFrom!: number;
+
+  rowTo!: number;
+
+  createdByUserId!: string;
+}
