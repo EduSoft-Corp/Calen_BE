@@ -2,7 +2,11 @@ export class ReadCalenDto {
   id!: string;
   content!: string;
 
-  date!: Date;
+  date!: string;
+
+  timeFrom!: string;
+
+  timeTo!: string;
 
   visible?: boolean;
 

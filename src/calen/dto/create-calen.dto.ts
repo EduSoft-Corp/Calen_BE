@@ -1,7 +1,11 @@
 export class CreateCalenDto {
   content!: string;
 
-  date!: Date;
+  date!: string;
+
+  timeFrom!: string;
+
+  timeTo!: string;
 
   visible?: boolean;
 

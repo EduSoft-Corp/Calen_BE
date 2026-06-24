@@ -17,8 +17,14 @@ export class Calen {
   @Column({ type: 'varchar', length: 255 })
   content!: string;
 
-  @Column({ type: 'datetime' })
-  date!: Date;
+  @Column({ type: 'date' })
+  date!: string;
+
+  @Column({ type: 'time' })
+  timeFrom!: string;
+
+  @Column({ type: 'time' })
+  timeTo!: string;
 
   @Column({ type: 'boolean', default: true })
   visible!: boolean;

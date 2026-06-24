@@ -3,7 +3,11 @@ import { CreateCalenDto } from './create-calen.dto';
 export class UpdateCalenDto implements Partial<CreateCalenDto> {
   content?: string;
 
-  date?: Date;
+  date!: string;
+
+  timeFrom!: string;
+
+  timeTo!: string;
 
   visible?: boolean;
 

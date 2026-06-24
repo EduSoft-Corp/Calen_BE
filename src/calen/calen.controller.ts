@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CalenService } from './calen.service';
 import { Calen } from './entities/calen.entity';
@@ -32,7 +33,7 @@ export class CalenController {
     return this.calenService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCalenDto: UpdateCalenDto,
