@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Calen } from './entities/calen.entity';
 import { CreateCalenDto } from './dto/create-calen.dto';
 import { UpdateCalenDto } from './dto/update-calen.dto';
@@ -26,9 +26,11 @@ export class CalenService {
     return this.calenRepository.save(calen);
   }
 
-  findAll(): Promise<Calen[]> {
+  findAll({fromDay, toDay}): Promise<Calen[]> {
+    if(fromDay == undefined || toDay == undefined) return new Promise(()=>[]);
+    
     return this.calenRepository.find({
-      where: { isDelete: false },
+      where: { isDelete: false, date: Between(fromDay, toDay) },
       order: { date: 'ASC' },
     });
   }

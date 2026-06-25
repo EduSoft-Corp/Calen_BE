@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CalenService } from './calen.service';
 import { Calen } from './entities/calen.entity';
@@ -24,8 +25,14 @@ export class CalenController {
   }
 
   @Get()
-  findAll(): Promise<Calen[]> {
-    return this.calenService.findAll();
+  findAll(
+    @Query('fromDay') fromDay?: string,
+    @Query('toDay') toDay?: string,
+  ): Promise<Calen[]> {
+    return this.calenService.findAll({
+      fromDay,
+      toDay
+    });
   }
 
   @Get(':id')
