@@ -5,6 +5,7 @@ import { Calen } from './entities/calen.entity';
 import { CreateCalenDto } from './dto/create-calen.dto';
 import { UpdateCalenDto } from './dto/update-calen.dto';
 import { User } from '../user/entities/user.entity';
+import { LogService } from '../log/log.service';
 
 @Injectable()
 export class CalenService {
@@ -13,6 +14,7 @@ export class CalenService {
     private readonly calenRepository: Repository<Calen>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly logService: LogService,
   ) {}
 
   async create(createCalenDto: CreateCalenDto): Promise<Calen> {
@@ -23,7 +25,16 @@ export class CalenService {
       visible: createCalenDto.visible ?? true,
     });
 
-    return this.calenRepository.save(calen);
+    const savedCalen = await this.calenRepository.save(calen);
+
+    await this.logService.create({
+      userId: savedCalen.createdByUserId,
+      entityId: savedCalen.id,
+      action: 'CREATE',
+      affectedEntity: 'Calen',
+    });
+
+    return savedCalen;
   }
 
   findAll({fromDay, toDay}): Promise<Calen[]> {
@@ -56,7 +67,16 @@ export class CalenService {
 
     this.calenRepository.merge(calen, updateCalenDto);
 
-    return this.calenRepository.save(calen);
+    const updatedCalen = await this.calenRepository.save(calen);
+
+    await this.logService.create({
+      userId: updateCalenDto.createdByUserId ?? updatedCalen.createdByUserId,
+      entityId: updatedCalen.id,
+      action: 'UPDATE',
+      affectedEntity: 'Calen',
+    });
+
+    return updatedCalen;
   }
 
   async remove(id: string): Promise<Calen> {
@@ -64,7 +84,16 @@ export class CalenService {
 
     calen.isDelete = true;
 
-    return this.calenRepository.save(calen);
+    const deletedCalen = await this.calenRepository.save(calen);
+
+    await this.logService.create({
+      userId: deletedCalen.createdByUserId,
+      entityId: deletedCalen.id,
+      action: 'DELETE',
+      affectedEntity: 'Calen',
+    });
+
+    return deletedCalen;
   }
 
   private async ensureUserExists(userId: string): Promise<void> {

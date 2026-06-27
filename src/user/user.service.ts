@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -6,12 +6,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ReadUserDto } from './dto/read-user.dto';
 import * as bcrypt from 'bcrypt';
+import { LogService } from '../log/log.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly logService: LogService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ReadUserDto> {
@@ -24,7 +26,16 @@ export class UserService {
       isActive: createUserDto.isActive ?? true,
     });
 
-    const {id, email, fullName, isActive, lastLoggedIn, createdAt} = await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+
+    await this.logService.create({
+      userId: savedUser.id,
+      entityId: savedUser.id,
+      action: 'CREATE',
+      affectedEntity: 'User',
+    });
+
+    const { id, email, fullName, isActive, lastLoggedIn, createdAt } = savedUser;
 
     return {
       id, email, fullName, isActive, lastLoggedIn, createdAt
@@ -63,7 +74,16 @@ export class UserService {
 
     this.userRepository.merge(user, updateUserDto);
 
-    const {id, email, fullName, isActive, lastLoggedIn, createdAt} = await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+
+    await this.logService.create({
+      userId: savedUser.id,
+      entityId: savedUser.id,
+      action: 'UPDATE',
+      affectedEntity: 'User',
+    });
+
+    const { id, email, fullName, isActive, lastLoggedIn, createdAt } = savedUser;
 
     return {
       id, email, fullName, isActive, lastLoggedIn, createdAt
@@ -75,7 +95,14 @@ export class UserService {
 
     user.isDelete = true;
 
-    const userDeleted = await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+
+    await this.logService.create({
+      userId: savedUser.id,
+      entityId: savedUser.id,
+      action: 'DELETE',
+      affectedEntity: 'User',
+    });
 
     return true;
   }
