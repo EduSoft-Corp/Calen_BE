@@ -45,9 +45,4 @@ export class LogController {
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<boolean> {
     return this.logService.remove(id);
   }
-
-  @Post('reverse/:id')
-  reverse(@Param('id', ParseUUIDPipe) id: string): Promise<ReadLogDto> {
-    return this.logService.reverse(id);
-  }
 }

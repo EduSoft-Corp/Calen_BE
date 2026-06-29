@@ -4,8 +4,9 @@ import { Repository } from 'typeorm';
 import { Log } from './entities/log.entity';
 import { CreateLogDto } from './dto/create-log.dto';
 import { UpdateLogDto } from './dto/update-log.dto';
-import { ReadLogDto } from './dto/read-log.dto';
+import { ReadDetailLogDto, ReadLogDto } from './dto/read-log.dto';
 import { Calen } from '../calen/entities/calen.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class LogService {
@@ -14,6 +15,8 @@ export class LogService {
     private readonly logRepository: Repository<Log>,
     @InjectRepository(Calen)
     private readonly calenRepository: Repository<Calen>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) { }
 
   async create(createLogDto: CreateLogDto): Promise<ReadLogDto> {
@@ -22,11 +25,12 @@ export class LogService {
     return this.mapToReadDto(savedLog);
   }
 
-  async findAll(): Promise<ReadLogDto[]> {
+  async findAll(): Promise<ReadDetailLogDto[]> {
     const logs = await this.logRepository.find({
       order: { createdAt: 'DESC' },
     });
-    return logs.map((log) => this.mapToReadDto(log));
+    const detailedLogs = await Promise.all(logs.map((log) => this.mapToReadDto(log)));
+    return detailedLogs;
   }
 
   async findOne(id: string): Promise<Log> {
@@ -54,36 +58,22 @@ export class LogService {
     return true;
   }
 
-  async reverse(id: string): Promise<ReadLogDto> {
-    const log = await this.findOne(id);
-
-    switch (log.action) {
-      case 'CREATE':
-        if (log.affectedEntity === "Calen") {
-          await this.calenRepository.delete(log.entityId);
-        }
-        break;
-      case 'UPDATE':
-
-        break;
-      case 'DELETE':
-
-        break;
+  private async mapToReadDto(log: Log): Promise<ReadDetailLogDto> {
+    let userName = '';
+    // Get user name from calen entity
+    const user = await this.userRepository.findOne({
+      where: { id: log.userId },
+    });
+    if (user) {
+      userName = user.fullName;
     }
-
-    log.hasBeenReverse = true;
-    const updatedLog = await this.logRepository.save(log);
-    return this.mapToReadDto(updatedLog);
-  }
-
-  private mapToReadDto(log: Log): ReadLogDto {
     return {
       id: log.id,
       userId: log.userId,
+      userName: userName,
       entityId: log.entityId,
       action: log.action,
       affectedEntity: log.affectedEntity,
-      hasBeenReverse: log.hasBeenReverse,
       createdAt: log.createdAt,
       updatedAt: log.updatedAt,
     };

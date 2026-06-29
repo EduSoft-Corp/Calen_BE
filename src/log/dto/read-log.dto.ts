@@ -9,9 +9,11 @@ export class ReadLogDto {
 
   affectedEntity!: string;
 
-  hasBeenReverse!: boolean;
-
   createdAt!: Date;
 
   updatedAt!: Date;
+}
+
+export class ReadDetailLogDto extends ReadLogDto {
+  userName!: string;
 }

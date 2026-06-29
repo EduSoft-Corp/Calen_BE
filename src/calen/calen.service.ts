@@ -15,7 +15,7 @@ export class CalenService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly logService: LogService,
-  ) {}
+  ) { }
 
   async create(createCalenDto: CreateCalenDto): Promise<Calen> {
     await this.ensureUserExists(createCalenDto.createdByUserId);
@@ -37,11 +37,11 @@ export class CalenService {
     return savedCalen;
   }
 
-  findAll({fromDay, toDay}): Promise<Calen[]> {
-    if(fromDay == undefined || toDay == undefined) return new Promise(()=>[]);
-    
+  findAll({ userId, fromDay, toDay }): Promise<Calen[]> {
+    if (fromDay == undefined || toDay == undefined) return new Promise(() => []);
+
     return this.calenRepository.find({
-      where: { isDelete: false, date: Between(fromDay, toDay) },
+      where: { createdByUserId: userId, isDelete: false, date: Between(fromDay, toDay) },
       order: { date: 'ASC' },
     });
   }

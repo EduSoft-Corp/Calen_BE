@@ -4,9 +4,10 @@ import { LogController } from './log.controller';
 import { LogService } from './log.service';
 import { Log } from './entities/log.entity';
 import { Calen } from '../calen/entities/calen.entity';
+import { User } from '../user/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Log]), TypeOrmModule.forFeature([Calen])],
+  imports: [TypeOrmModule.forFeature([Log]), TypeOrmModule.forFeature([Calen]), TypeOrmModule.forFeature([User])],
   controllers: [LogController],
   providers: [LogService],
   exports: [LogService],
