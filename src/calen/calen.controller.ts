@@ -42,6 +42,20 @@ export class CalenController {
     });
   }
 
+  @Get("/public")
+  findAllAsPublic(
+    @Query('userId', ParseUUIDPipe) userId?: string,
+    @Query('fromDay') fromDay?: string,
+    @Query('toDay') toDay?: string,
+  ): Promise<Calen[]> {
+    
+    return this.calenService.findAll({
+      userId,
+      fromDay,
+      toDay
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Calen> {
     return this.calenService.findOne(id);
